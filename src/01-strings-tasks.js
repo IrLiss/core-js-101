@@ -252,8 +252,8 @@ function getRectangleString(width, height) {
  *
  */
 function encodeToRot13(str) {
-  let alphaFirst = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  let alphaSecond = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+  const alphaFirst = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const alphaSecond = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
 
   return str.replace(/[a-z]/gi, (letter) => alphaSecond[alphaFirst.indexOf(letter)]);
 }
@@ -301,8 +301,8 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-  let cardsOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-  let suitsOrder = ['♣', '♦', '♥', '♠'];
+  const cardsOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const suitsOrder = ['♣', '♦', '♥', '♠'];
 
   return cardsOrder.indexOf(value.slice(0, -1)) + suitsOrder.indexOf(value.slice(-1)) * 13;
 }

@@ -66,7 +66,7 @@ function getStringFromTemplate(firstName, lastName) {
  *   'Hello, Chuck Norris!' => 'Chuck Norris'
  */
 function extractNameFromTemplate(value) {
-  return value.slice(7, value.indexOf('!'));
+  return value.replace(/Hello, |!/g, '');
 }
 
 
@@ -96,7 +96,7 @@ function getFirstChar(value) {
  *   '\tHello, World! ' => 'Hello, World!'
  */
 function removeLeadingAndTrailingWhitespaces(value) {
-  return value.trim();
+  return value.replace(/^\t|^\s\s|\s$/gm, '');
 }
 
 /**
@@ -127,7 +127,8 @@ function repeatString(value, count) {
  *   'ABABAB','BA' => 'ABAB'
  */
 function removeFirstOccurrences(str, value) {
-  return str.replace(value, '');
+  const temp = RegExp(`${value}`, '');
+  return str.replace(temp, '');
 }
 
 /**
@@ -203,35 +204,10 @@ function extractEmails(str) {
  *
  */
 function getRectangleString(width, height) {
-  let str = '';
-  let strStart = '';
-  let strCenter = '';
-  let strEnd = '';
-  for (let i = 0; i < width; i += 1) {
-    if (i === 0) {
-      strCenter += '│';
-      strStart += '┌';
-      strEnd += '└';
-    } else if (i === width - 1) {
-      strCenter += '│\n';
-      strStart += '┐\n';
-      strEnd += '┘\n';
-    } else {
-      strCenter += ' ';
-      strStart += '─';
-      strEnd += '─';
-    }
-  }
-  for (let i = 0; i < height; i += 1) {
-    if (i === 0) {
-      str += `${strStart}`;
-    } else if (i === height - 1) {
-      str += `${strEnd}`;
-    } else {
-      str += `${strCenter}`;
-    }
-  }
-  return str;
+  const top = `┌${'─'.repeat(width - 2)}┐\n`;
+  const middle = `│${' '.repeat(width - 2)}│\n`.repeat(height - 2);
+  const bottom = `└${'─'.repeat(width - 2)}┘\n`;
+  return top + middle + bottom;
 }
 
 
@@ -252,10 +228,15 @@ function getRectangleString(width, height) {
  *
  */
 function encodeToRot13(str) {
-  const alphaFirst = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  const alphaSecond = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
-
-  return str.replace(/[a-z]/gi, (letter) => alphaSecond[alphaFirst.indexOf(letter)]);
+  const a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const b = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+  let result = '';
+  for (let i = 0; i < str.length; i += 1) {
+    const temp = a.indexOf(str[i]);
+    if (temp !== -1) result += b[temp];
+    else result += str[i];
+  }
+  return result;
 }
 
 /**
@@ -272,7 +253,7 @@ function encodeToRot13(str) {
  *   isString(new String('test')) => true
  */
 function isString(value) {
-  return typeof value === 'string' || value instanceof String;
+  return (typeof value === 'string' || value instanceof String);
 }
 
 
@@ -301,10 +282,13 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-  const cardsOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-  const suitsOrder = ['♣', '♦', '♥', '♠'];
-
-  return cardsOrder.indexOf(value.slice(0, -1)) + suitsOrder.indexOf(value.slice(-1)) * 13;
+  const cards = [
+    'A♣', '2♣', '3♣', '4♣', '5♣', '6♣', '7♣', '8♣', '9♣', '10♣', 'J♣', 'Q♣', 'K♣',
+    'A♦', '2♦', '3♦', '4♦', '5♦', '6♦', '7♦', '8♦', '9♦', '10♦', 'J♦', 'Q♦', 'K♦',
+    'A♥', '2♥', '3♥', '4♥', '5♥', '6♥', '7♥', '8♥', '9♥', '10♥', 'J♥', 'Q♥', 'K♥',
+    'A♠', '2♠', '3♠', '4♠', '5♠', '6♠', '7♠', '8♠', '9♠', '10♠', 'J♠', 'Q♠', 'K♠',
+  ];
+  return cards.indexOf(value);
 }
 
 

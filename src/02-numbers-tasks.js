@@ -36,7 +36,7 @@ function getRectangleArea(width, height) {
  *   0    => 0
  */
 function getCircleCircumference(radius) {
-  return 2 * Math.PI * radius;
+  return Math.PI * 2 * radius;
 }
 
 /**
@@ -110,7 +110,8 @@ function getLinearEquationRoot(a, b) {
  *   (0,1) (1,2)     => 0
  */
 function getAngleBetweenVectors(x1, y1, x2, y2) {
-  return Math.abs(Math.atan2(y1, x1) - Math.atan2(y2, x2));
+  return Math.acos(x1 * x2 + y1 * y2)
+    / (Math.sqrt(x1 ** 2 + y1 ** 2) * Math.sqrt(x2 ** 2 + y2 ** 2));
 }
 
 /**
@@ -126,7 +127,7 @@ function getAngleBetweenVectors(x1, y1, x2, y2) {
  *     0     => 0
  */
 function getLastDigit(value) {
-  return +value.toString().slice(-1);
+  return value % 10;
 }
 
 
@@ -142,7 +143,7 @@ function getLastDigit(value) {
  * '-525.5'     => -525.5
  */
 function parseNumberFromString(value) {
-  return Number.parseFloat(value, 10);
+  return +value;
 }
 
 /**
@@ -181,7 +182,21 @@ function getParallelepipedDiagonal(a, b, c) {
  *   1678, 3  => 2000
  */
 function roundToPowerOfTen(num, pow) {
-  return Math.round(num / 10 ** pow) * 10 ** pow;
+  let temp;
+  switch (pow) {
+    case 1:
+      temp = 10;
+      break;
+    case 2:
+      temp = 100;
+      break;
+    case 3:
+      temp = 1000;
+      break;
+    default:
+      temp = 1;
+  }
+  return Number((num / temp).toFixed()) * temp;
 }
 
 /**
@@ -202,11 +217,10 @@ function roundToPowerOfTen(num, pow) {
  *   17 => true
  */
 function isPrime(n) {
-  if (n <= 1) return false;
-  for (let i = 2; i <= Math.sqrt(n); i += 1) {
+  for (let i = 2, s = Math.sqrt(n); i <= s; i += 1) {
     if (n % i === 0) return false;
   }
-  return true;
+  return n > 1;
 }
 
 /**
@@ -225,7 +239,7 @@ function isPrime(n) {
  *   toNumber(new Number(42), 0) => 42
  */
 function toNumber(value, def) {
-  return (Number.isNaN(+value)) ? def : +value;
+  return Number(value) ? Number(value) : def;
 }
 
 module.exports = {

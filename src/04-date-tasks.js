@@ -35,7 +35,7 @@ function parseDataFromRfc2822(value) {
  *    '2016-01-19T08:07:37Z' => Date()
  */
 function parseDataFromIso8601(value) {
-  return Date.parse(value);
+  return new Date(value);
 }
 
 
@@ -55,10 +55,9 @@ function parseDataFromIso8601(value) {
  */
 function isLeapYear(date) {
   const year = date.getFullYear();
-  if (year % 4 !== 0) return false;
-  if (year % 100 !== 0) return true;
-  if (year % 400 !== 0) return false;
-  return true;
+
+  return ((year % 4 === 0 && year % 100 !== 0)
+    || (year % 4 === 0 && year % 100 === 0 && year % 400 === 0));
 }
 
 
@@ -78,12 +77,22 @@ function isLeapYear(date) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
 function timeSpanToString(startDate, endDate) {
-  const date = endDate - startDate;
-  const h = Math.trunc((date / 3600000) % 100).toString().padStart(2, '0');
-  const m = Math.trunc((date / 60000) % 60).toString().padStart(2, '0');
-  const s = Math.trunc((date / 1000) % 60).toString().padStart(2, '0');
-  const ms = Math.trunc(date % 1000).toString().padStart(3, '0');
-  return `${h}:${m}:${s}.${ms}`;
+  let hours = endDate.getHours() - startDate.getHours();
+  hours = hours < 10 ? `0${hours}` : hours;
+
+  let minutes = endDate.getMinutes() - startDate.getMinutes();
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  let seconds = endDate.getSeconds() - startDate.getSeconds();
+  seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+  const ms = endDate.getMilliseconds() - startDate.getMilliseconds();
+
+  if (ms < 10) return `${hours}:${minutes}:${seconds}.00${ms}`;
+
+  if (ms < 100) return `${hours}:${minutes}:${seconds}.0${ms}`;
+
+  return `${hours}:${minutes}:${seconds}.${ms}`;
 }
 
 
@@ -103,8 +112,19 @@ function timeSpanToString(startDate, endDate) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
+function angleBetweenClockHands(date) {
+  const hours = date.getUTCHours() % 12;
+  const minutes = date.getUTCMinutes();
+  const sum = 60 * hours + minutes;
+
+  const angleMinutes = (6 * minutes) % 180;
+
+  if (0.5 * sum === 0) {
+    return (angleMinutes * Math.PI) / 180;
+  }
+  const angleHours = (0.5 * sum) % 180 === 0 ? 180 : (0.5 * sum) % 180;
+
+  return (Math.abs(angleHours - angleMinutes) * Math.PI) / 180;
 }
 
 
